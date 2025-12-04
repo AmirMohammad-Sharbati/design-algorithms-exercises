@@ -14,14 +14,15 @@ struct Point {
 };
 
 // These are global variables, because they are used many times:
-vector<Point> all_points;
-vector<int> seen_z;
-int n;
+vector<Point> all_points, temp; // temp for merge step in recursive function
+vector<int> seen_z, last_seen;  // This is for BIT step
+int n, exe_count;               // exe_count is for implementing the functionality to make the seen_z zero in next round of recursion
 
 int main() {
     cin >> n;
 
     all_points.resize(n);
+    temp.resize(n);
 
     vector<int> z_values(n);
 
@@ -31,6 +32,10 @@ int main() {
         z_values[i] = all_points[i].z;
         all_points[i].ans = 0;
     }
+
+    seen_z.assign(n + 1, 0);
+    last_seen.assign(n + 1, 0);
+    exe_count = 1;
 
     // At first, because of later BIT structure, we need to compress the zs to numbers 1 to n based on thier order:
     sort(z_values.begin(), z_values.end());
@@ -64,50 +69,68 @@ void dominance_counting(int l, int r) {
     dominance_counting(l, mid);
     dominance_counting(mid + 1, r);
 
-    /// Main idea of algorithm is this step (merge step):
+    /// Main idea of algorithm is this step (conqure step):
 
-    vector<Point> left(all_points.begin() + l, all_points.begin() + mid + 1);
-    vector<Point> right(all_points.begin() + mid + 1, all_points.begin() + r + 1);
+    // seen_z is global variable. It is necessary to reinitialize it to zero
+    exe_count++;
 
-    // Now I should sort points based on y:
-    sort(left.begin(), left.end(), [](auto &a, auto &b) {
-        return a.y < b.y;
-    });
-    sort(right.begin(), right.end(), [](auto &a, auto &b) {
-        return a.y < b.y;
-    });
+    // We should sort points by y, but they are already sorted because of merges in previous rounds (See last 20 lines of this function).
 
-    // seen_z is global variable. It is necessary to reinitialize it to zero (and we can also resize it, both with assign() function):
-    seen_z.assign(n + 1, 0);
-
-    // We only need to iterate over right array and use BIT for finding the count of (z in left array < current z):
-    int j = 0;
-    for (int i = 0; i < right.size(); i++) {
-        while (j < left.size() && left[j].y < right[i].y) {
-            add_to_seen_z(left[j].z);
+    // We only need to iterate over right array and use BIT for finding the count of (z in left array < current z in right):
+    int j = l;
+    for (int i = mid + 1; i <= r; i++) {
+        while (j <= mid && all_points[j].y < all_points[i].y) {
+            add_to_seen_z(all_points[j].z);
             j++;
         }
-        right[i].ans += count_z_less_than_current(right[i].z);
+        all_points[i].ans += count_z_less_than_current(all_points[i].z);
     }
 
-    // At the end we should merge these two sorted arrays (right and left arrays) into all_points:
-    merge(left.begin(), left.end(), right.begin(), right.end(), all_points.begin() + l, [](const Point &a, const Point &b) {
-        return a.y < b.y;
-    });
+    // At the end we should merge these two sorted arrays:
+
+    // Merge all_points[l..mid] and all_points[mid+1..r] by y into temp
+    int i = l, k = l;
+    j = mid + 1;
+
+    while (i <= mid && j <= r) {
+        if (all_points[i].y <= all_points[j].y)
+            temp[k++] = all_points[i++];
+        else
+            temp[k++] = all_points[j++];
+    }
+
+    while (i <= mid)
+        temp[k++] = all_points[i++];
+    while (j <= r)
+        temp[k++] = all_points[j++];
+
+    // We should copy temp back to all_points
+    for (int t = l; t <= r; t++)
+        all_points[t] = temp[t];
 }
 
 // These two functions are related to the BIT (Fenwick) tree. It is amazing data structure :)
 
 // We should updata specific numbers (i += i & (-i)):
 void add_to_seen_z(int z) {
-    for (int i = z; i < seen_z.size(); i += i & (-i))
+    for (int i = z; i <= n; i += i & (-i)) {
+        if (last_seen[i] != exe_count) {
+            last_seen[i] = exe_count;
+            seen_z[i] = 0;
+        }
         seen_z[i] += 1;
+    }
 }
 
 // We should sum specific numbers to reach our goal (i -= i & (-i)):
 int count_z_less_than_current(int z) {
     int sum = 0;
-    for (int i = z; i > 0; i -= i & (-i))
+    for (int i = z; i > 0; i -= i & (-i)) {
+        if (last_seen[i] != exe_count) {
+            last_seen[i] = exe_count;
+            seen_z[i] = 0;
+        }
         sum += seen_z[i];
+    }
     return sum;
 }
