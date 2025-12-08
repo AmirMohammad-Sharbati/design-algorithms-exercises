@@ -23,6 +23,8 @@ int main() {
     long long min_heap_sum = 0;
 
     cin >> sum;
+
+    // First insertion
     if (sum >= 0) {
         result += sum;
         min_heap.push(sum);
@@ -41,6 +43,7 @@ int main() {
 
         sum += a;
 
+        // median_calculation
         if (max_heap.size() == min_heap.size()) {
             median = (max_heap.top() + min_heap.top()) / 2;
         } else if (max_heap.size() > min_heap.size()) {
@@ -49,6 +52,7 @@ int main() {
             median = min_heap.top();
         }
 
+        // Based on the median, we insert the number into the correct heap:
         if (sum <= median) {
             max_heap.push(sum);
             max_heap_sum += sum;
@@ -57,7 +61,7 @@ int main() {
             min_heap_sum += sum;
         }
 
-        // Rebalance heaps
+        // Rebalance heaps: Their sizes should differ by at most one:
         if (max_heap.size() > min_heap.size() + 1) {
             min_heap.push(max_heap.top());
             min_heap_sum += max_heap.top();
@@ -70,8 +74,10 @@ int main() {
             min_heap.pop();
         }
 
+        // Assign coefficient -1 to max_heap numbers (the smaller half) and +1 to min_heap numbers (the larger half):
         result = min_heap_sum - max_heap_sum;
 
+        // We can improve the result slightly by assigning zero, or changing -1 to +1 (or vice versa) when allowed.
         if (max_heap.size() == min_heap.size()) {
             if (max_heap.top() > 0)
                 result += max_heap.top();
