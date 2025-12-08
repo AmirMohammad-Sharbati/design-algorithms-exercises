@@ -1,4 +1,4 @@
-## Question 1 of Assignment 1 : DP algorithm question
+## Question 1 of Assignment 1 : DP algorithm question or Greedy?
 
 
 In this question we have n numbers in input (actualy first number is n and after that we expect n numbers) called them ai (not AI, a with index i :)))  
@@ -25,13 +25,14 @@ and so we need to save three number for each step for each i between 1 to n: the
 but, it still isn't perfect, it seems that in this algorithm we could achieve to O(n^2) time complexity (of course space complexity is O(n) and it is efficient) 
 
 
-### The most difficult part of algorithm: How to achieve to n log n or n from previous algorithm?
-The main point of question is that Fk(x) is concave. we define it as followed:
-Fk(x) = best sum (aibi) 1 <= i <= k as bk = x.
-because in step k we need this: what is the best total value if last b = x?
-so the recursive function is this:
-F(k+1)(y) = a(k+1) * y + max (Fk(y), Fk (y-1), Fk (y+1))
-so the final result for each step is this:
-Ans[k] = max (Fk(-1), Fk(0), Fk(1))
+### The most difficult part of algorithm: How to achieve to n log n or n?
+Despite preference of question, the algorithm is greedy! We can solve this question in O(n log n) with greedy algorithm. 
+The main idea that we change the sum(aibi) to sum((bi-bi+1)sum(a1ai)) :)) It is amazing!
+we should transform the final result to sum of numbers that each of them has the coefficient equal to differenc of bis which is known based on question that is -+1 or 0. 
+sum (aibi) = ((b1-b2)a1) + ((b3-b2)(a1+a2)) + ... (bn-1-bn-2)(sum(a1 to an-1)) + bn(sum a1 to an)
+all of these coefficients are -+1 or 0. so we should assign the best choice by greedy algorithm
+we should sort |sum (a1 to ai)| (absolute value) and assign +1 to biger one and -1 to which has big absolute value. at the end the count of -1 and +1 shuld be same or with difference 1.
 
-We should use concativity of F to store good points to show its total behaviour with a few points...
+
+### Data Structure
+For sorting the array that we add number to it in each step, we should use heap. In this heap the inserting time complexity is O(log n), so we can solve question in O(n log n)
