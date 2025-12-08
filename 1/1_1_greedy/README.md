@@ -36,3 +36,27 @@ we should sort |sum (a1 to ai)| (absolute value) and assign +1 to biger one and 
 
 ### Data Structure
 For sorting the array that we add number to it in each step, we should use heap. In this heap the inserting time complexity is O(log n), so we can solve question in O(n log n)
+
+A priority_queue in C++ by default acts as a max-heap, where the largest element is always at the top.
+To implement a min-heap, you need to specify `greater<int>` as the comparator:
+
+you can see this code which is implemented two heap to calculate the median and sum of numbers of two heaps:
+https://github.com/AmirMohammad-Sharbati/data-structures-and-algorithms/tree/master/T2_data_structures/1_heap
+
+
+### 
+dynamic online assignment of coefficients {-1, 0, +1} to maximize:
+```
+sum = Σ (coef_i * value_i)
+```
+
+with the constraint:  
+- #(+1) and #(-1) must differ by at most 1  
+- One element may have coefficient 0  
+- Assignment must update every time a new number arrives  
+- The choice must maximize the weighted sum  
+- This is a classic online median-by-value partition with small tweaks.
+
+
+### Big note:
+I implement two versoin of code. they are both similar. in first code everything is in one main function. in function two I implement some functinons to code be more clean. they are like macro (code snippeds). for not passing values and returing them, I use global values in the code. 
