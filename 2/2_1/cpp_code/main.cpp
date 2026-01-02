@@ -1,13 +1,20 @@
+#include <algorithm>
 #include <iostream>
 #include <unordered_map>
 #include <vector>
 
 using namespace std;
 
-void update_three_final_values(char c1, char c2, char c3, char alphabet, unordered_map<string, int>::iterator iterator);
+int id(char c) {
+    if (c == 'A') return 0;
+    if (c == 'C') return 1;
+    if (c == 'G') return 2;
+    return 3; // T
+}
 
-unordered_map<string, long> genetic_patterns;
-unordered_map<string, long> new_string_values;
+char ch(int x) {
+    return "ACGT"[x];
+}
 
 int main() {
     int n, m;
@@ -15,6 +22,9 @@ int main() {
 
     string input_genetic;
     cin >> input_genetic;
+
+    unordered_map<string, long> genetic_patterns;
+    unordered_map<string, long> new_string_values;
 
     genetic_patterns.reserve(m);
     for (int i = 0; i < m; i++) {
@@ -28,148 +38,78 @@ int main() {
     unordered_map<string, long> prev_string_values; // 64 is 4^3, three last alphabets of string
     char alphabets[4] = {'A', 'C', 'G', 'T'};
 
-    char c1 = input_genetic[0];
-    if (c1 != '?') {
-        string key = string(1, c1);
-        if (genetic_patterns.count(key)) {
-            prev_string_values.insert({key, genetic_patterns[key]});
-        } else
-            prev_string_values.insert({key, 0});
-    } else {
-        for (char c1 : alphabets) {
-            string key = string(1, c1);
-            if (genetic_patterns.count(key)) {
-                prev_string_values.insert({key, genetic_patterns[key]});
-            } else
-                prev_string_values.insert({key, 0});
-        }
-    }
+    vector<unordered_map<string, string>> parent_state(n);
+    vector<unordered_map<string, char>> parent_char(n);
 
-    if (n >= 2) {
-    }
-    if (n >= 3) {
-    }
-
-    // ------------------
-    // k = 0: first character
-    // ------------------
     for (char c : (input_genetic[0] == '?' ? alphabets : string(1, input_genetic[0]))) {
         long score = 0;
         string key = string(1, c);
 
         if (genetic_patterns.count(key)) score += genetic_patterns[key];
 
+        parent_char[0][key] = c;
+        parent_state[0][key] = "";
         prev_string_values[key] = score; // only one char
     }
 
-    // ------------------
-    // k = 1: second character
-    // ------------------
-    new_string_values.clear();
-    for (auto it = prev_string_values.begin(); it != prev_string_values.end(); ++it) {
-        string prev = it->first;
-        long prev_score = it->second;
-
-        for (char c : (input_genetic[1] == '?' ? alphabets : string(1, input_genetic[1]))) {
-            string key = prev + c; // two letters
-            long score = prev_score;
-
-            // add pattern scores ending here
-            if (genetic_patterns.count(key)) score += genetic_patterns[key];                   // length 2
-            if (genetic_patterns.count(string(1, c))) score += genetic_patterns[string(1, c)]; // length 1
-
-            new_string_values[key] = max(new_string_values[key], score);
-        }
-    }
-    prev_string_values = new_string_values;
-
-    // ------------------
-    // k = 2: third character
-    // ------------------
-    new_string_values.clear();
-    for (auto it = prev_string_values.begin(); it != prev_string_values.end(); ++it) {
-        string prev = it->first; // length 2
-        long prev_score = it->second;
-
-        for (char c : (input_genetic[2] == '?' ? alphabets : string(1, input_genetic[2]))) {
-            string key = prev + c; // three letters
-            long score = prev_score;
-
-            // add pattern scores ending here (length 1..3)
-            if (genetic_patterns.count(key)) score += genetic_patterns[key];                                     // length 3
-            if (genetic_patterns.count(prev.substr(1, 1) + c)) score += genetic_patterns[prev.substr(1, 1) + c]; // length 2
-            if (genetic_patterns.count(string(1, c))) score += genetic_patterns[string(1, c)];                   // length 1
-
-            new_string_values[key] = max(new_string_values[key], score);
-        }
-    }
-    prev_string_values = new_string_values;
-
-    for (int k = 3; k < n; k++) {
+    for (int k = 1; k < n; k++) {
+        new_string_values.clear();
         for (auto iterator = prev_string_values.begin(); iterator != prev_string_values.end(); iterator++) {
-            char c1 = iterator->first[0];
-            char c2 = iterator->first[1];
-            char c3 = iterator->first[2];
+            string prev = iterator->first;
+            long prev_score = iterator->second;
 
             for (char alphabet : (input_genetic[k] == '?' ? alphabets : string(1, input_genetic[k]))) {
-                int value = 0;
-                string key = string(1, c1) + c2 + c3 + alphabet;
-                if (genetic_patterns.count(key)) {
-                    value += genetic_patterns[key];
-                }
-                key = string(1, c2) + c3 + alphabet;
-                if (genetic_patterns.count(key)) {
-                    value += genetic_patterns[key];
-                }
-                key = string(1, c3) + alphabet;
-                if (genetic_patterns.count(key)) {
-                    value += genetic_patterns[key];
-                }
-                key = string(1, alphabet);
-                if (genetic_patterns.count(key)) {
-                    value += genetic_patterns[key];
+                long value = prev_score;
+                string key = prev + alphabet;
+
+                for (int len = 1; len <= (int)key.size(); len++) {
+                    string suffix = key.substr((int)key.size() - len, len);
+                    if (genetic_patterns.count(suffix)) {
+                        value += genetic_patterns[suffix];
+                    }
                 }
 
-                new_string_values.insert({string(1, c2) + c3 + alphabet, iterator->second + value});
+                // new_string_values.insert({string(1, c2) + c3 + alphabet, iterator->second + value});
+                // string next_state = key.substr(1, 3);
+                string next_state;
+                if ((int)key.size() <= 3)
+                    next_state = key;
+                else
+                    next_state = key.substr(key.size() - 3);
+
+                if (!new_string_values.count(next_state) || value > new_string_values[next_state]) {
+                    new_string_values[next_state] = value;
+                    parent_state[k][next_state] = iterator->first; // previous 3-char state
+                    parent_char[k][next_state] = alphabet;         // appended char
+                }
             }
-
-            // if (input_genetic[k] != '?')
-            //     update_three_final_values(c1, c2, c3, input_genetic[k], iterator);
-            // else {
-            //     for (char alphabet : alphabets)
-            //         update_three_final_values(c1, c2, c3, alphabet, iterator);
-            // }
         }
         prev_string_values = new_string_values;
-        new_string_values.clear();
     }
 
-    long max_value = long(-1e14);
-    for (const auto &p : prev_string_values)
-        max_value = max(max_value, p.second);
 
-    cout << max_value;
+    long max_value = -1e18;
+    string last_state;
+
+    for (auto &p : prev_string_values) {
+        if (p.second > max_value) {
+            max_value = p.second;
+            last_state = p.first;
+        }
+    }
+
+    string answer;
+    string cur_state = last_state;
+
+    for (int k = n - 1; k >= 0; k--) {
+        char c = parent_char[k][cur_state];
+        answer.push_back(c);
+        cur_state = parent_state[k][cur_state];
+    }
+
+    reverse(answer.begin(), answer.end());
+
+    cout << max_value << endl;
+    cout << answer;
     return 0;
 }
-
-// void update_three_final_values(char c1, char c2, char c3, char alphabet, unordered_map<string, long>::iterator iterator) {
-//     int value = 0;
-//     string key = string(1, c1) + c2 + c3 + alphabet;
-//     if (genetic_patterns.count(key)) {
-//         value += genetic_patterns[key];
-//     }
-//     key = string(1, c2) + c3 + alphabet;
-//     if (genetic_patterns.count(key)) {
-//         value += genetic_patterns[key];
-//     }
-//     key = string(1, c3) + alphabet;
-//     if (genetic_patterns.count(key)) {
-//         value += genetic_patterns[key];
-//     }
-//     key = string(1, alphabet);
-//     if (genetic_patterns.count(key)) {
-//         value += genetic_patterns[key];
-//     }
-
-//     new_string_values.insert({string(1, c2) + c3 + alphabet, iterator->second + value});
-// }
