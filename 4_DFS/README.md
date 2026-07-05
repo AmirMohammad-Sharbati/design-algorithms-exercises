@@ -1,23 +1,59 @@
-## ASSIGNMENT 2: second question
-
-in this algorithm we try to write the brute force algorithm. because of small inputs, it will be accepted.
-I use DFS like algorithm. for what? for generating all non descentent sequences which are between 1 and m (bound = m) and their length is n. 
-
-I write the recursive function which generates all sequences
-after that we should check all constraints for all sequnces and print the most value which is passed constraints.
+# Problem 4: Non-Descending Sequences
 
 
-### Time complexity:
-what is the count of non descentent sequences with n numbers which are from 1 to m?
-we can compute it as this:
-see it as difference between numbers that their sum should be less or equal to m-1.
-so we should solve this equation:
-x1 + ... xn <= m-1  | xi >= 0  => xi is the difference beween ai and ai-1 (a0 = 1)
-so the count is this:
-x1 + ... xn + xn+1 = m-1  =>  combination (n+m-1, n) choose n from n+m-1
-suppose that maximum m and n is 10. so the count of sequences is less than 1e5.
-for each one we should check all constraints which is at most q = 50.
-so brute force algorithm works for these m, n, q well.
+## 📋 Problem Statement
 
-### 
-we have python, cpp and java implementations for this question.
+We need to construct a non-decreasing sequence of length `n` where each element is between `1` and `m`:  
+1 ≤ A₁ ≤ A₂ ≤ ... ≤ Aₙ ≤ m
+
+We are also given `q` constraints. Each constraint has four values `(a, b, c, d)` meaning: 
+- If `A_b - A_a = c`, then add `d` to the total score
+
+The goal is to find a valid sequence that maximizes the total score.
+
+**Input:**
+- First line: `n`, `m`, `q`
+- Next `q` lines: `a`, `b`, `c`, `d`
+
+**Output:** Maximum possible score
+
+## 🧠 Algorithm
+
+**Algorithm:** Brute Force + DFS
+
+Since `n ≤ 10` and `m ≤ 10`, the number of non-decreasing sequences is small enough to generate all of them.
+
+### Counting Sequences
+
+The number of non-decreasing sequences of length `n` with values from `1` to `m` is:  
+C(n + m - 1, n)
+
+
+
+For maximum values `n = 10` and `m = 10`, this is `C(19, 10) = 92,378` sequences. This is small enough to check all of them.
+
+### DFS Generation
+
+We generate all non-decreasing sequences recursively:
+- Start with `1` as the first element
+- At each step, the next element must be ≥ the previous element
+- Continue until we reach length `n`
+
+### Checking Constraints
+
+For each generated sequence:
+1. Initialize score = 0
+2. For each constraint `(a, b, c, d)`:
+   - If `sequence[b-1] - sequence[a-1] == c`, add `d`
+3. Keep track of maximum score
+
+### Complexity
+
+**Time Complexity:** O(C(n+m-1, n) × q) - generating all sequences and checking constraints
+**Space Complexity:** O(C(n+m-1, n) × n) - storing all sequences
+
+## Files
+
+- `main.cpp`: C++ implementation
+- `Main.java`: Java implementation
+- `main.py`: Python implementation
