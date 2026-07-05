@@ -61,5 +61,5 @@ We also store parent pointers to reconstruct the sequence.
 
 ### Complexity
 
-**Time Complexity:** O(n × nodes × 4) - nodes is the total length of all patterns
-**Space Complexity:** O(n × nodes) for DP table and parent pointers
+- **Time Complexity:** O(n × nodes × 4) - nodes is the total length of all patterns
+- **Space Complexity:** O(n × nodes) for parent pointers (DP itself uses O(nodes) with rolling arrays)

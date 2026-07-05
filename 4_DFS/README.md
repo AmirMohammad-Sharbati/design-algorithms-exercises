@@ -49,8 +49,8 @@ For each generated sequence:
 
 ### Complexity
 
-**Time Complexity:** O(C(n+m-1, n) × q) - generating all sequences and checking constraints
-**Space Complexity:** O(C(n+m-1, n) × n) - storing all sequences
+- **Time Complexity:** O(C(n+m-1, n) × q) - generating all sequences and checking constraints
+- **Space Complexity:** O(C(n+m-1, n) × n) - storing all sequences
 
 ## Files
 

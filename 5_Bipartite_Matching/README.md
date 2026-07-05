@@ -44,5 +44,5 @@ We find the maximum matching using DFS (Kuhn's algorithm):
 
 ### Complexity
 
-**Time Complexity:** O(n × m) - each DFS visits each column at most once
-**Space Complexity:** O(n + m) - storing graph and matching
+- **Time Complexity:** O(n × m) - each DFS visits each column at most once
+- **Space Complexity:** O(n + m) - storing graph and matching

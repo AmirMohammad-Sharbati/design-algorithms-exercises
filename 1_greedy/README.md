@@ -6,7 +6,7 @@ Given a sequence of `n` integers `a₁, a₂, ..., aₙ`, for each prefix of len
 
 Σᵢ₌₁ᵏ (aᵢ × bᵢ)
 
-where bᵢ ∈ {-1, 0, 1} and |bᵢ₊₁ - bᵢ| ≤ 1. Also |b₁ - bₖ| ≤ 1.
+where bᵢ ∈ {-1, 0, 1}, |bᵢ₊₁ - bᵢ| ≤ 1, and |b₁ - bₖ| ≤ 1.
 
 - **Input:** n and then n numbers  
 - **Output:** n numbers - the answer for each prefix
@@ -40,12 +40,15 @@ sum(min_heap) - sum(max_heap)
 
 With a small adjustment for the zero coefficient when heaps are equal size.
 
-**Time Complexity:** O(n log n)  
-**Space Complexity:** O(n)
-
-You can see this code which implements two heaps to calculate the median and sum of numbers:
-https://github.com/AmirMohammad-Sharbati/data-structures-and-algorithms/tree/master/T2_data_structures/1_heap
+You can see [this code](https://github.com/AmirMohammad-Sharbati/data-structures-and-algorithms/tree/master/T2_data_structures/1_heap) which implements two heaps to calculate the median and sum of numbers.
 
 
-### Big note:
-I implemented two versions of the code. They are both similar. In the first code, everything is in one main function. In the second, I implemented some functions to make the code cleaner. They are like macros (code snippets). To avoid passing values and returning them, I used global variables.
+### Complexity
+
+- **Time Complexity:** O(n log n)  
+- **Space Complexity:** O(n)
+
+
+### Note:
+
+I implemented two versions of the code. They are functionally similar. In the first version, everything is in one main function. In the second version, I refactored the code into helper functions to improve readability. To avoid passing and returning values, I used global variables.

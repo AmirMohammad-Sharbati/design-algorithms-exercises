@@ -48,5 +48,7 @@ We process both halves sorted by y:
 
 This gives us the dominance count for the combine step.  
 
-**Time Complexity:** O(n log² n)  
-**Space Complexity:** O(n)
+### Complexity
+
+- **Time Complexity:** O(n log² n)  
+- **Space Complexity:** O(n)

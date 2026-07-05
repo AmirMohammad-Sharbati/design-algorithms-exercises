@@ -40,5 +40,5 @@ We try all possible splits and all possible pattern lengths to find the minimum.
 
 ### Complexity
 
-**Time Complexity:** O(n³) - checking all substrings and all pattern lengths
-**Space Complexity:** O(n²) - DP table
+- **Time Complexity:** O(n³) - checking all substrings and all pattern lengths
+- **Space Complexity:** O(n²) - DP table
